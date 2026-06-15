@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="description" content="Cert Mastery — practice questions, study notes, and timed tests for AWS CCP, CISSP, PMP, Security+, NCE, and NCMHCE certifications." />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="css/style.css" />
+  <title>Cert Mastery — Study & Practice</title>
+</head>
+<body>
+  <div id="app">
+    <!-- Header (persistent) -->
+    <header class="app-header">
+      <button class="back-btn" id="backBtn" aria-label="Back">‹</button>
+      <h1 class="app-title" id="appTitle">Cert Mastery</h1>
+      <div class="header-spacer"></div>
+    </header>
+
+    <main id="main">
+      <!-- Home / Exam Selection -->
+      <section id="homeScreen" class="screen active">
+        <div class="hero">
+          <h2>Pick a certification</h2>
+          <p class="hero-sub">Practice questions with explanations, study notes, and timed tests.</p>
+        </div>
+        <div class="cert-grid" id="certGrid"></div>
+        <div class="stats-card" id="statsCard">
+          <h3>Your Progress</h3>
+          <div id="statsContent">
+            <p class="muted">No tests taken yet. Start with a practice test!</p>
+          </div>
+          <button class="btn-link" id="resetStatsBtn">Reset progress</button>
+        </div>
+      </section>
+
+      <!-- Cert menu (after picking) -->
+      <section id="certMenu" class="screen">
+        <div class="cert-header">
+          <h2 id="certMenuTitle">Certification</h2>
+          <p class="muted" id="certMenuDesc"></p>
+        </div>
+        <div class="action-grid">
+          <button class="action-card" id="goNotesBtn">
+            <div class="action-icon">📚</div>
+            <h3>Study Notes</h3>
+            <p>Comprehensive notes for this cert</p>
+          </button>
+          <button class="action-card" id="goPracticeBtn">
+            <div class="action-icon">✏️</div>
+            <h3>Practice Mode</h3>
+            <p>All questions, instant feedback</p>
+          </button>
+          <button class="action-card" id="goTestBtn">
+            <div class="action-icon">⏱️</div>
+            <h3>Test Mode</h3>
+            <p>Pick N questions, optional timer</p>
+          </button>
+        </div>
+        <div class="cert-stats" id="certStats"></div>
+      </section>
+
+      <!-- Notes Viewer -->
+      <section id="notesScreen" class="screen">
+        <div class="notes-header">
+          <h2 id="notesTitle">Study Notes</h2>
+          <p class="muted" id="notesDesc"></p>
+        </div>
+        <nav class="notes-toc" id="notesToc"></nav>
+        <div class="notes-content" id="notesContent"></div>
+      </section>
+
+      <!-- Test Setup -->
+      <section id="testSetup" class="screen">
+        <h2>Configure Test</h2>
+        <div class="form-group">
+          <label for="numQuestions">Number of questions</label>
+          <div class="range-row">
+            <input type="range" id="numQuestions" min="5" max="100" value="25" />
+            <span class="range-value" id="numQuestionsVal">25</span>
+          </div>
+          <p class="muted" id="questionCountInfo"></p>
+        </div>
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="enableTimer" />
+            <span>Enable timer (1 minute per question)</span>
+          </label>
+        </div>
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="shuffleOrder" checked />
+            <span>Shuffle question order</span>
+          </label>
+        </div>
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="showInstantFeedback" checked />
+            <span>Show explanation after each question</span>
+          </label>
+        </div>
+        <button class="btn btn-primary btn-large" id="startTestBtn">Start Test</button>
+      </section>
+
+      <!-- Practice/Test Taking -->
+      <section id="questionScreen" class="screen">
+        <div class="quiz-header">
+          <div class="quiz-progress">
+            <span id="progressText">Question 1 of 10</span>
+            <div class="progress-bar">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+          </div>
+          <div class="timer" id="timer" hidden>
+            <span class="timer-icon">⏱</span>
+            <span id="timerText">00:00</span>
+          </div>
+        </div>
+        <div class="question-card">
+          <h2 id="questionText">Question text</h2>
+          <div class="options" id="optionsContainer"></div>
+          <div class="feedback" id="feedback" hidden></div>
+          <div class="question-actions">
+            <button class="btn btn-primary" id="nextBtn" hidden>Next →</button>
+            <button class="btn btn-primary" id="finishBtn" hidden>Finish Test</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Results -->
+      <section id="resultsScreen" class="screen">
+        <div class="results-card">
+          <h2>Test Complete!</h2>
+          <div class="score-circle" id="scoreCircle">
+            <div class="score-percent" id="scorePercent">0%</div>
+            <div class="score-label" id="scoreLabel">0 / 0</div>
+          </div>
+          <p id="scoreMessage"></p>
+          <div class="results-actions">
+            <button class="btn btn-primary" id="reviewBtn">Review Answers</button>
+            <button class="btn btn-secondary" id="retakeBtn">Take Another</button>
+            <button class="btn btn-secondary" id="homeBtn">Home</button>
+          </div>
+        </div>
+        <div id="reviewContainer" class="review-container" hidden></div>
+      </section>
+    </main>
+
+    <!-- Install prompt -->
+    <div class="install-banner" id="installBanner" hidden>
+      <div class="install-text">
+        <strong>Install Cert Mastery</strong>
+        <p>Add to home screen for offline study</p>
+      </div>
+      <div class="install-actions">
+        <button class="btn btn-small btn-primary" id="installBtn">Install</button>
+        <button class="btn btn-small btn-secondary" id="dismissInstallBtn">Later</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="data/questions.js"></script>
+  <script src="data/questions_aws_p1.js"></script>
+  <script src="data/questions_aws_p2.js"></script>
+  <script src="data/questions_aws_p3.js"></script>
+  <script src="data/questions_securityplus.js"></script>
+  <script src="data/questions_securityplus_p1.js"></script>
+  <script src="data/questions_securityplus_p2.js"></script>
+  <script src="data/questions_securityplus_p3.js"></script>
+  <script src="data/questions_cissp.js"></script>
+  <script src="data/questions_cissp_p1.js"></script>
+  <script src="data/questions_cissp_p2.js"></script>
+  <script src="data/questions_cissp_p3.js"></script>
+  <script src="data/questions_pmp.js"></script>
+  <script src="data/questions_pmp_p1.js"></script>
+  <script src="data/questions_pmp_p2.js"></script>
+  <script src="data/questions_pmp_p3.js"></script>
+  <script src="data/questions_nce.js"></script>
+  <script src="data/questions_nce_p1.js"></script>
+  <script src="data/questions_nce_p2.js"></script>
+  <script src="data/questions_nce_p3.js"></script>
+  <script src="data/questions_ncmhce.js"></script>
+  <script src="data/questions_ncmhce_p1.js"></script>
+  <script src="data/questions_ncmhce_p2.js"></script>
+  <script src="data/questions_ncmhce_p3.js"></script>
+  <script src="data/notes.js"></script>
+  <script src="data/notes_cissp_pmp.js"></script>
+  <script src="data/notes_mentalhealth.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
